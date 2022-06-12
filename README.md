@@ -42,7 +42,7 @@ Pour ce faire il est important de faire un `group by item_principal.id` et un `s
 |---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
 | one(array $params, string $castInto = null) | Récupère un seul résultat. `$params` = tableau des variables a passer a la query. `$castInto` = nom de la classe pour mapper le résultat. |
 | all(array $params, string $castInto = null) | Récupère tous les résultats. Mêmes arguments que `one()`                                                                                  |
-| with(string $relation, array $params = [])  | Ajoute une relation à charger. Voir [link](#documentation-relations)                                                                      |
+| with(string $relation, array $params = [])  | Ajoute une relation à charger. Voir [Documentation relations](#documentation-relations)                                                                      |
 | withs(array $withs)                         | Ajoute plusieurs relations en une fois.                                                                                                   |
 
 ## Documentation relations
@@ -57,7 +57,7 @@ Pour ce faire il est important de faire un `group by item_principal.id` et un `s
 
 IL faut avoir `docker`, `composer`, ainsi que `make`  d'installés.
 
-- `git clone `
+- `git clone git@github.com:SwithFr/sql-query.git`
 - `make install`
 - `make start` et `make stop` pour lancer/stopper le conteneur PostgreSQL.
 - `make migrate`
@@ -69,3 +69,8 @@ IL faut avoir `docker`, `composer`, ainsi que `make`  d'installés.
 - `make test-advanced` pour lancer les tests sur les relations imbriquées.
 - `make cs` pour fixer le code style.
 - `make analyse` pour lancer l'analyse statique du code.
+
+### Todo
+
+- [ ] Trouver une meilleure interface pour `DBInterface` ?
+- [ ] Mettre en place la CI
