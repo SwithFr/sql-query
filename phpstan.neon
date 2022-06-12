@@ -1,0 +1,8 @@
+parameters:
+    paths:
+        - src
+    level: 9
+    excludePaths:
+        - vendor/*.php
+        - tests/*.php
+    checkMissingIterableValueType: false

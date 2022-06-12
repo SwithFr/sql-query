@@ -1,0 +1,12 @@
+version: '3.1'
+services:
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+      POSTGRES_DB: root
+    shm_size: 1g
+    ports:
+      - 5432:5432
+    # command: ["postgres", "-c", "log_statement=all"]

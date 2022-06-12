@@ -1,0 +1,28 @@
+{
+    "name": "swithfr/sql-query",
+    "autoload": {
+        "psr-4": {
+            "SwithFr\\SqlQuery\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwithFr\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.0",
+        "fzaninotto/faker": "^1.5"
+    },
+    "require-dev": {
+        "pestphp/pest": "^1.21",
+        "phpstan/phpstan": "^1.7",
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "symfony/var-dumper": "^6.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

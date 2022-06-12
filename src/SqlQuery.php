@@ -1,0 +1,157 @@
+<?php
+
+namespace SwithFr\SqlQuery;
+
+use PDO;
+use stdClass;
+use PDOStatement;
+use SwithFr\Tests\DemoEntities\ProductDemo;
+
+class SqlQuery
+{
+    private string $_query;
+
+    private array $_withs;
+
+    public function __construct(private DBInterface $db)
+    {
+    }
+
+    public function query(string $query): self
+    {
+        $this->_query = $query;
+
+        return $this;
+    }
+
+    public function all(array $params = [], string $castInto = null): array
+    {
+        $statement = $this->_queryStringToStatement($this->_query);
+        $statement->execute($params);
+
+        $this->_setFetchIntoClass($statement, $castInto);
+
+        $items = $statement->fetchAll();
+
+        if (empty($items)) {
+            return [];
+        }
+
+        return $this->_loadRelated($items);
+    }
+
+    public function one(array $params = [], string $castInto = null): ?object
+    {
+        $statement = $this->_queryStringToStatement($this->_query);
+        $statement->execute($params);
+
+        $this->_setFetchIntoClass($statement, $castInto);
+
+        $item = $statement->fetch();
+
+        $item = $this->_loadRelated([$item])[0] ?? null;
+
+        return $item ?: null;
+    }
+
+    public function withs(array $withs): self
+    {
+        foreach ($withs as $relation => $params) {
+            $this->with($relation, $params);
+        }
+
+        return $this;
+    }
+
+    public function with(string $relation, array $params = []): self
+    {
+        $this->_withs[$relation] = [
+            'query_aggregated_key' => $params['query_aggregated_key'] ?? "_$relation", // La clé utilisée dans la query pour "agréger" les infos liées
+            'related_class' => $params['related_class'] ?? stdClass::class, // La classe à utiliser pour mapper les items liés
+            'has_many' => isset($params['has_many']) && $params['has_many'] === true, // La relation est un array ou non ?
+        ];
+
+        return $this;
+    }
+
+    private function _queryStringToStatement(string $query): PDOStatement
+    {
+        try {
+            return $this->db->pdo()->prepare($query);
+        } catch (\PDOException $e) {
+            dd($e->getMessage());
+        }
+    }
+
+    private function _setFetchIntoClass(PDOStatement $statement, string $castInto = null): void
+    {
+        if ($castInto !== null) {
+            $statement->setFetchMode(PDO::FETCH_CLASS, $castInto);
+        }
+    }
+
+    private function _loadRelated(array $items): array
+    {
+        // Si on a des relations à charger
+        if (! empty($this->_withs)) {
+            foreach ($items as $item) {
+                foreach ($this->_withs as $relation => $params) {
+                    $queryAggregatedKey = $this->_getQueryAggregatedKey($relation, $params);
+                    try {
+                        // On transforme les items liés (en json via la query) en tableau php
+                        /** @var array $relatedItems */
+                        $relatedItems = json_decode($item->{$queryAggregatedKey}, true, 512, JSON_THROW_ON_ERROR);
+                        // On ajoute à l'item la relation
+                        $item = $this->_setRelation($item, $relation, $params, $relatedItems);
+                    } catch (\Exception $e) {
+                        dd($e);
+                    }
+                    // Enfin on supprime la version "raw" des éléments liés
+                    unset($item->{$queryAggregatedKey});
+                }
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Converti les items liés en objet php selon la classe passée en param
+     */
+    private function _buildRelatedItems(array $relatedItems, string $relatedClass): array
+    {
+        return array_filter(array_map(static fn($r) => $r !== null ? new $relatedClass($r) : null, $relatedItems));
+    }
+
+    private function _getQueryAggregatedKey(string $relation, array $params): string
+    {
+        return str_replace('.', '_', $params['query_aggregated_key'] ?? "_$relation");
+    }
+
+    private function _setRelation(object $item, string $relation, array $params, array $relatedItems): object
+    {
+        $relatedClass = $params['related_class'];
+        $nestedRelations = explode('.', $relation);
+
+        // Si on est sur une relation imbriquée
+        if (count($nestedRelations) > 1) {
+            $i = $item;
+            foreach ($nestedRelations as $k => $nestedRelation) {
+                // Si la relation est déjà chargée on passe à la suivante
+                if (isset($i->{$nestedRelation})) {
+                    $i = $i->{$nestedRelation};
+                    continue;
+                }
+
+                // On ajoute la relation
+                $this->_setRelation($i, $nestedRelation, $params, $relatedItems);
+            }
+        } elseif ($params['has_many']) {
+            $item->{$relation} = $this->_buildRelatedItems($relatedItems, $relatedClass);
+        } else {
+            $item->{$relation} = new $relatedClass($relatedItems[0] ?? []);
+        }
+
+        return $item;
+    }
+}
