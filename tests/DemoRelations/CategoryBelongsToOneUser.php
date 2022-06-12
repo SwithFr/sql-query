@@ -7,7 +7,6 @@ use SwithFr\Tests\DemoEntities\UserDemo;
 
 class CategoryBelongsToOneUser implements RelationshipInterface
 {
-
     public function getQueryAggregatedKey(): string
     {
         return "_category_user";
