@@ -22,16 +22,9 @@ $result = $sql->query('
         where c.id in (1, 2)
         group by products.id
     ')
-    ->with('category', [
-        'related_class' => CategoryDemo::class,
-    ])
-    ->with('category.user', [
-        'related_class' => UserDemo::class,
-    ])
-    ->with('tags', [
-        'related_class' => TagDemo::class,
-        'has_many' => true,
-    ])
+    ->with('category', new \SwithFr\Tests\DemoRelations\ProductHaveOneCategory())
+    ->with('category.user', new \SwithFr\Tests\DemoRelations\CategoryBelongsToOneUser())
+    ->with('tags', new \SwithFr\Tests\DemoRelations\ProductHaveManyTags())
     ->one([], ProductDemo::class)
 ;
 ```
@@ -40,12 +33,12 @@ $result = $sql->query('
 L'astuce est d'agréger les infos liées au format json via `array_to_json(array_agg(table_liée.*)) as _nom_relation`;
 Pour ce faire il est important de faire un `group by item_principal.id` et un `select item_principal.*`.
 
-| Method                                      | Explanations                                                                                                                              |
-|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| one(array $params, string $castInto = null) | Récupère un seul résultat. `$params` = tableau des variables a passer a la query. `$castInto` = nom de la classe pour mapper le résultat. |
-| all(array $params, string $castInto = null) | Récupère tous les résultats. Mêmes arguments que `one()`                                                                                  |
-| with(string $relation, array $params = [])  | Ajoute une relation à charger. Voir [Documentation relations](#documentation-relations)                                                                      |
-| withs(array $withs)                         | Ajoute plusieurs relations en une fois.                                                                                                   |
+| Method                                                      | Explanations                                                                                                                              |
+|-------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| one(array $params, string $castInto = null)                 | Récupère un seul résultat. `$params` = tableau des variables a passer a la query. `$castInto` = nom de la classe pour mapper le résultat. |
+| all(array $params, string $castInto = null)                 | Récupère tous les résultats. Mêmes arguments que `one()`                                                                                  |
+| with(string $relationName, RelationshipInterface $relation) | Ajoute une relation à charger. Voir [Documentation relations](#documentation-relations)                                                                      |
+| withs(array $withs)                                         | Ajoute plusieurs relations en une fois.                                                                                                   |
 
 ## Documentation relations
 
@@ -79,3 +72,4 @@ IL faut avoir `docker`, `composer`, ainsi que `make`  d'installés.
 - [ ] Faire du lazy loading... par certain que ce soit à cette classe de gérer ça.
 - [x] Refacto pour des "SqlEntity".
 - [x] Gerer les relations via des classes.
+- [ ] Update la doc pour les relations.
