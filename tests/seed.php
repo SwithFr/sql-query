@@ -83,7 +83,7 @@ it('seed', function() {
 
     for ($i = 0; $i < 10000; $i++) {
         $q = $db->pdo()->prepare("insert into products (name, category_id, user_id) values (:name, :category, :user)");
-        $user = $i < 10 ? $i+1 : null;
+        $user = $i < 10 ? 1 : null;
         $q->execute([$faker->name, random_int(1, 1000), $user]);
     }
 

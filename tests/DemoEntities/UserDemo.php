@@ -2,7 +2,9 @@
 
 namespace SwithFr\Tests\DemoEntities;
 
-class UserDemo
+use SwithFr\SqlQuery\SqlEntity;
+
+class UserDemo extends SqlEntity
 {
     public int $id;
 
@@ -12,13 +14,6 @@ class UserDemo
      * @var \SwithFr\Tests\DemoEntities\ProductDemo[]
      */
     public array $products;
-
-    public function __construct(array $data = [])
-    {
-        foreach ($data as $key => $value) {
-            $this->{$key} = $value;
-        }
-    }
 
     public function getProducts(): array
     {

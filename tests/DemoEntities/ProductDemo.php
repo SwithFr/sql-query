@@ -2,7 +2,9 @@
 
 namespace SwithFr\Tests\DemoEntities;
 
-class ProductDemo
+use SwithFr\SqlQuery\SqlEntity;
+
+class ProductDemo extends SqlEntity
 {
     public int $id;
 

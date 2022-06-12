@@ -77,3 +77,5 @@ IL faut avoir `docker`, `composer`, ainsi que `make`  d'installés.
 - [ ] Trouver une meilleure interface pour `DBInterface` ?
 - [ ] Mettre en place la CI
 - [ ] Faire du lazy loading... par certain que ce soit à cette classe de gérer ça.
+- [ ] Refacto pour des "SqlEntity".
+- [ ] Gerer les relations via des classes.

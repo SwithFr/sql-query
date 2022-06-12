@@ -2,7 +2,9 @@
 
 namespace SwithFr\Tests\DemoEntities;
 
-class CategoryDemo
+use SwithFr\SqlQuery\SqlEntity;
+
+class CategoryDemo extends SqlEntity
 {
     public int $id;
 
@@ -11,13 +13,6 @@ class CategoryDemo
     public ?int $user_id = null;
 
     public ?UserDemo $user = null;
-
-    public function __construct(array $data = [])
-    {
-        foreach($data as $key => $value){
-            $this->{$key} = $value;
-        }
-    }
 
     public function getUser(): ?UserDemo
     {

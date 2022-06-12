@@ -2,16 +2,11 @@
 
 namespace SwithFr\Tests\DemoEntities;
 
-class TagDemo
+use SwithFr\SqlQuery\SqlEntity;
+
+class TagDemo extends SqlEntity
 {
     public int $id;
 
     public string $name;
-
-    public function __construct(array $data = [])
-    {
-        foreach($data as $key => $value){
-            $this->{$key} = $value;
-        }
-    }
 }
