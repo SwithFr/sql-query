@@ -4,7 +4,7 @@ namespace SwithFr\Tests;
 
 use PDO;
 use PDOException;
-use SwithFr\SqlQuery\DBInterface;
+use SwithFr\SqlQuery\Contracts\DBInterface;
 
 class PgsqlDB implements DBInterface
 {

@@ -1,16 +1,18 @@
 <?php
 
-use SwithFr\Tests\PgsqlDB;
-use SwithFr\Tests\DemoEntities\TagDemo;
 use SwithFr\SqlQuery\SqlQuery;
-use SwithFr\Tests\DemoEntities\ProductDemo;
 use SwithFr\Tests\DemoEntities\CategoryDemo;
-use function PHPUnit\Framework\assertNull;
+use SwithFr\Tests\DemoEntities\ProductDemo;
+use SwithFr\Tests\DemoEntities\TagDemo;
+use SwithFr\Tests\DemoRelations\ProductHaveManyTags;
+use SwithFr\Tests\DemoRelations\ProductHaveOneCategory;
+use SwithFr\Tests\PgsqlDB;
 use function PHPUnit\Framework\assertEmpty;
 use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertInstanceOf;
 use function PHPUnit\Framework\assertIsArray;
 use function PHPUnit\Framework\assertNotNull;
-use function PHPUnit\Framework\assertInstanceOf;
+use function PHPUnit\Framework\assertNull;
 
 uses()->group('tests');
 
@@ -69,9 +71,7 @@ test('SqlQuery returns related item', function () use ($db) {
             left join categories c on products.category_id = c.id
             group by products.id
         ')
-        ->with('category', [
-            'related_class' => CategoryDemo::class,
-        ])
+        ->with('category', new ProductHaveOneCategory())
         ->one([], ProductDemo::class)
     ;
 
@@ -91,10 +91,7 @@ test('SqlQuery returns all related items', function () use ($db) {
             left join tags t on tag_id = t.id
             group by products.id
         ')
-        ->with('tags', [
-            'related_class' => TagDemo::class,
-            'has_many' => true,
-        ])
+        ->with('tags', new ProductHaveManyTags())
         ->one([], ProductDemo::class)
     ;
 
@@ -120,13 +117,8 @@ test('SqlQuery returns related items for all items', function () use ($db) {
             group by products.id
         ')
         ->withs([
-            'category' => [
-                'related_class' => CategoryDemo::class,
-            ],
-            'tags' => [
-                'related_class' => TagDemo::class,
-                'has_many' => true,
-            ],
+            'category' => new ProductHaveOneCategory(),
+            'tags' => new ProductHaveManyTags(),
         ])
         ->all([], ProductDemo::class)
     ;
@@ -161,10 +153,7 @@ test('Return empty array if no related', function () use ($db) {
             where products.id = 42
             group by products.id
         ')
-        ->with('tags',[
-            'related_class' => TagDemo::class,
-            'has_many' => true,
-        ])
+        ->with('tags', new ProductHaveManyTags())
         ->one([], ProductDemo::class)
     ;
 
@@ -185,7 +174,7 @@ test('Related are stdclass if there is no related_class', function () use ($db) 
             left join categories c on products.category_id = c.id
             group by products.id
         ')
-        ->with('cat')
+        ->with('cat', new ProductHaveOneCategory(true))
         ->one([], ProductDemo::class)
     ;
 
@@ -203,7 +192,7 @@ test('Related are stdclass if there is no related_class many relation', function
             where products.id = 42
             group by products.id
         ')
-        ->with('tagsstdclass', ['has_many' => true])
+        ->with('tagsstdclass', new ProductHaveManyTags(true))
         ->one([], ProductDemo::class)
     ;
 

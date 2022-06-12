@@ -3,9 +3,10 @@
 namespace SwithFr\SqlQuery;
 
 use PDO;
-use stdClass;
 use PDOStatement;
-use SwithFr\Tests\DemoEntities\ProductDemo;
+use stdClass;
+use SwithFr\SqlQuery\Contracts\DBInterface;
+use SwithFr\SqlQuery\Contracts\RelationshipInterface;
 
 class SqlQuery
 {
@@ -54,21 +55,24 @@ class SqlQuery
         return $item ?: null;
     }
 
+    /**
+     * @param array<string, RelationshipInterface> $withs
+     */
     public function withs(array $withs): self
     {
-        foreach ($withs as $relation => $params) {
-            $this->with($relation, $params);
+        foreach ($withs as $relationName => $relation) {
+            $this->with($relationName, $relation);
         }
 
         return $this;
     }
 
-    public function with(string $relation, array $params = []): self
+    public function with(string $relationName, RelationshipInterface $relation): self
     {
-        $this->_withs[$relation] = [
-            'query_aggregated_key' => $params['query_aggregated_key'] ?? "_$relation", // La clé utilisée dans la query pour "agréger" les infos liées
-            'related_class' => $params['related_class'] ?? stdClass::class, // La classe à utiliser pour mapper les items liés
-            'has_many' => isset($params['has_many']) && $params['has_many'] === true, // La relation est un array ou non ?
+        $this->_withs[$relationName] = [
+            'query_aggregated_key' => $relation->getQueryAggregatedKey(), // La clé utilisée dans la query pour "agréger" les infos liées
+            'related_class' => $relation->getRelatedClassName() ?? stdClass::class, // La classe à utiliser pour mapper les items liés
+            'has_many' => $relation->hasMany(), // La relation est un array ou non ?
         ];
 
         return $this;
@@ -96,7 +100,7 @@ class SqlQuery
         if (! empty($this->_withs)) {
             foreach ($items as $item) {
                 foreach ($this->_withs as $relation => $params) {
-                    $queryAggregatedKey = $this->_getQueryAggregatedKey($relation, $params);
+                    $queryAggregatedKey = $params['query_aggregated_key'];
                     try {
                         // On transforme les items liés (en json via la query) en tableau php
                         /** @var array $relatedItems */
@@ -121,11 +125,6 @@ class SqlQuery
     private function _buildRelatedItems(array $relatedItems, string $relatedClass): array
     {
         return array_filter(array_map(static fn($r) => $r !== null ? new $relatedClass($r) : null, $relatedItems));
-    }
-
-    private function _getQueryAggregatedKey(string $relation, array $params): string
-    {
-        return str_replace('.', '_', $params['query_aggregated_key'] ?? "_$relation");
     }
 
     private function _setRelation(object $item, string $relation, array $params, array $relatedItems): object
