@@ -13,7 +13,7 @@ Par exemple avoir une entité AdminProduct, FrontProduct, CartProduct...
 ```php
 $sql = new SqlQuery($db);
 $result = $sql->query('
-        select products.*,  array_to_json(array_agg(c.*)) as _category, array_to_json(array_agg(c.*)) as _category_user
+        select products.*, array_to_json(array_agg(c.*)) as _category, array_to_json(array_agg(c.*)) as _category_user
         from products
         left join categories c on products.category_id = c.id
         left join users u on c.user_id = u.id
