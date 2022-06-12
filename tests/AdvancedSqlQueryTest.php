@@ -1,12 +1,14 @@
 <?php
 
-use SwithFr\Tests\PgsqlDB;
-use SwithFr\Tests\DemoEntities\UserDemo;
 use SwithFr\SqlQuery\SqlQuery;
 use SwithFr\Tests\DemoEntities\ProductDemo;
-use SwithFr\Tests\DemoEntities\CategoryDemo;
-use function PHPUnit\Framework\assertIsArray;
+use SwithFr\Tests\DemoEntities\UserDemo;
+use SwithFr\Tests\DemoRelations\CategoryBelongsToOneUser;
+use SwithFr\Tests\DemoRelations\ProductHaveOneCategory;
+use SwithFr\Tests\DemoRelations\UserHaveManyProducts;
+use SwithFr\Tests\PgsqlDB;
 use function PHPUnit\Framework\assertInstanceOf;
+use function PHPUnit\Framework\assertIsArray;
 
 $db = new PgsqlDB();
 
@@ -22,12 +24,8 @@ test('Test simple nested', function () use ($db) {
             where c.id in (1, 2)
             group by products.id
         ')
-        ->with('category', [
-            'related_class' => CategoryDemo::class,
-        ])
-        ->with('category.user', [
-            'related_class' => UserDemo::class,
-        ])
+        ->with('category', new ProductHaveOneCategory())
+        ->with('category.user', new CategoryBelongsToOneUser())
         ->one([], ProductDemo::class)
     ;
 
@@ -46,17 +44,9 @@ test('Test multi nested', function () use ($db) {
             group by products.id
         ')
         ->withs([
-            'category' => [
-                'related_class' => CategoryDemo::class,
-            ],
-            'category.user' => [
-                'related_class' => UserDemo::class,
-            ],
-            'category.user.products' => [
-                'related_class' => ProductDemo::class,
-                'has_many' => true,
-                'query_aggregated_key' => '_user_products',
-            ],
+            'category' => new ProductHaveOneCategory(),
+            'category.user' => new CategoryBelongsToOneUser(),
+            'category.user.products' => new UserHaveManyProducts(),
         ])
         ->all([], ProductDemo::class)
     ;
