@@ -1,5 +1,7 @@
 # SQL QUERY
 
+![ci](https://github.com/SwithFr/sql-query/actions/workflows/ci.yml/badge.svg)
+
 L'idée est d'avoir une classe pour utiliser des requêtes SQL "natives" sans passer par un ORM et être capable d'avoir
 simplement des relations.
 Donc pouvoir dire que pour une requête donnée, je veux mapper les résultats avec une classe donnée. Et avoir les
