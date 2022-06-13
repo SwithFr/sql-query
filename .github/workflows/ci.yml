@@ -34,5 +34,5 @@ jobs:
       - name: Test
         run: make ci-tests
         env:
-          POSTGRES_HOST: localhost
+          POSTGRES_HOST: postgres
           POSTGRES_PORT: 5432
