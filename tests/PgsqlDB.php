@@ -13,8 +13,8 @@ class PgsqlDB implements DBInterface
     public function __construct()
     {
         try {
-            dump(getenv());
-            $this->pdo = new PDO("pgsql:host=localhost;port=5432;dbname=root;user=root;password=root");
+            $host = getenv('POSTGRES_HOST') ?: 'localhost';
+            $this->pdo = new PDO("pgsql:host=$host;port=5432;dbname=root;user=root;password=root");
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
         } catch (PDOException $e) {
