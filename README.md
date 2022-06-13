@@ -24,9 +24,9 @@ $result = $sql->query('
         where c.id in (1, 2)
         group by products.id
     ')
-    ->with(new \SwithFr\Tests\DemoRelations\ProductHaveOneCategory())
-    ->with(new \SwithFr\Tests\DemoRelations\CategoryBelongsToOneUser('category.user', '_category_user'))
-    ->with(new \SwithFr\Tests\DemoRelations\ProductHaveManyTags())
+    ->with(new ProductHaveOneCategory())
+    ->with(new CategoryBelongsToOneUser('category.user', '_category_user'))
+    ->with(new ProductHaveManyTags())
     ->one([], ProductDemo::class)
 ;
 ```
