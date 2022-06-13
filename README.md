@@ -24,9 +24,9 @@ $result = $sql->query('
         where c.id in (1, 2)
         group by products.id
     ')
-    ->with('category', new \SwithFr\Tests\DemoRelations\ProductHaveOneCategory())
-    ->with('category.user', new \SwithFr\Tests\DemoRelations\CategoryBelongsToOneUser())
-    ->with('tags', new \SwithFr\Tests\DemoRelations\ProductHaveManyTags())
+    ->with(new \SwithFr\Tests\DemoRelations\ProductHaveOneCategory())
+    ->with(new \SwithFr\Tests\DemoRelations\CategoryBelongsToOneUser('category.user', '_category_user'))
+    ->with(new \SwithFr\Tests\DemoRelations\ProductHaveManyTags())
     ->one([], ProductDemo::class)
 ;
 ```
@@ -70,7 +70,7 @@ IL faut avoir `docker`, `composer`, ainsi que `make`  d'installés.
 ### Todo
 
 - [ ] Trouver une meilleure interface pour `DBInterface` ?
-- [ ] Mettre en place la CI
+- [x] Mettre en place la CI
 - [ ] Faire du lazy loading... par certain que ce soit à cette classe de gérer ça.
 - [x] Refacto pour des "SqlEntity".
 - [x] Gerer les relations via des classes.
