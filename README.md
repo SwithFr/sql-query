@@ -75,3 +75,4 @@ IL faut avoir `docker`, `composer`, ainsi que `make`  d'installés.
 - [x] Refacto pour des "SqlEntity".
 - [x] Gerer les relations via des classes.
 - [ ] Update la doc pour les relations.
+- [ ] Gestion des erreurs.

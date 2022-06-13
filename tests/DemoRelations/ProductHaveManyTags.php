@@ -2,32 +2,24 @@
 
 namespace SwithFr\Tests\DemoRelations;
 
+use stdClass;
+use SwithFr\SqlQuery\Relationship;
 use SwithFr\SqlQuery\Contracts\RelationshipInterface;
 use SwithFr\Tests\DemoEntities\TagDemo;
 
-class ProductHaveManyTags implements RelationshipInterface
+class ProductHaveManyTags extends Relationship
 {
-    public function __construct(private string $name = 'tags', private string $queryAggregatedKey = '_tags')
+    public function __construct(protected string $name = 'tags', protected string $queryAggregatedKey = '_tags')
     {
-    }
-
-    public function getQueryAggregatedKey(): string
-    {
-        return $this->queryAggregatedKey;
     }
 
     public function getRelatedClassName(): ?string
     {
-        return $this->name === 'tags' ? TagDemo::class : \stdClass::class;
+        return $this->name === 'tags' ? TagDemo::class : stdClass::class;
     }
 
     public function hasMany(): bool
     {
         return true;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
     }
 }

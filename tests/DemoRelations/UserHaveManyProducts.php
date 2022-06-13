@@ -2,18 +2,16 @@
 
 namespace SwithFr\Tests\DemoRelations;
 
+use SwithFr\SqlQuery\Relationship;
 use SwithFr\SqlQuery\Contracts\RelationshipInterface;
 use SwithFr\Tests\DemoEntities\ProductDemo;
 
-class UserHaveManyProducts implements RelationshipInterface
+class UserHaveManyProducts extends Relationship
 {
-    public function __construct(private string $name = 'user.products', private string $queryAggregatedKey = '_user_products')
-    {
-    }
-
-    public function getQueryAggregatedKey(): string
-    {
-        return $this->queryAggregatedKey;
+    public function __construct(
+        protected string $name = 'user.products',
+        protected string $queryAggregatedKey = '_user_products'
+    ) {
     }
 
     public function getRelatedClassName(): ?string
@@ -24,10 +22,5 @@ class UserHaveManyProducts implements RelationshipInterface
     public function hasMany(): bool
     {
         return true;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
     }
 }
