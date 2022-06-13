@@ -1,6 +1,6 @@
 <?php
 
-namespace SwithFr\SqlQuery;
+namespace SwithFr\SqlQuery\Traits;
 
 trait ArrayHydratation
 {

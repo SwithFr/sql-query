@@ -1,14 +1,15 @@
 <?php
 
-namespace SwithFr\Tests;
+namespace SwithFr\SqlQuery;
 
 use PDO;
 use PDOException;
+use PDOStatement;
 use SwithFr\SqlQuery\Contracts\DBInterface;
 
-class PgsqlDB implements DBInterface
+class PgsqlDatabase implements DBInterface
 {
-    public PDO $pdo;
+    private PDO $pdo;
 
     public function __construct()
     {
@@ -21,7 +22,16 @@ class PgsqlDB implements DBInterface
         }
     }
 
-    public function pdo(): PDO
+    public function queryStringToStatement(string $query): PDOStatement
+    {
+        try {
+            return $this->pdo->prepare($query);
+        } catch (PDOException $e) {
+            dd($e->getMessage());
+        }
+    }
+
+    public function getPdo(): PDO
     {
         return $this->pdo;
     }

@@ -1,6 +1,7 @@
 <?php
 
 use SwithFr\SqlQuery\SqlQuery;
+use SwithFr\SqlQuery\PgsqlDatabase;
 use SwithFr\Tests\DemoEntities\CategoryDemo;
 use SwithFr\Tests\DemoEntities\ProductDemo;
 use SwithFr\Tests\DemoEntities\TagDemo;
@@ -16,7 +17,7 @@ use function PHPUnit\Framework\assertNull;
 
 uses()->group('tests');
 
-$db = new PgsqlDB();
+$db = new PgsqlDatabase();
 
 /**
  * On s'assure qu'on a bien tous les résultats si on fait ->all()

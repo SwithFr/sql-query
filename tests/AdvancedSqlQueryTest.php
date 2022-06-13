@@ -1,6 +1,7 @@
 <?php
 
 use SwithFr\SqlQuery\SqlQuery;
+use SwithFr\SqlQuery\PgsqlDatabase;
 use SwithFr\Tests\DemoEntities\ProductDemo;
 use SwithFr\Tests\DemoEntities\UserDemo;
 use SwithFr\Tests\DemoRelations\CategoryBelongsToOneUser;
@@ -10,7 +11,7 @@ use SwithFr\Tests\PgsqlDB;
 use function PHPUnit\Framework\assertInstanceOf;
 use function PHPUnit\Framework\assertIsArray;
 
-$db = new PgsqlDB();
+$db = new PgsqlDatabase();
 
 uses()->group('tests', 'advanced');
 

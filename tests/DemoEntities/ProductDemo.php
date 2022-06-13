@@ -3,10 +3,12 @@
 namespace SwithFr\Tests\DemoEntities;
 
 use SwithFr\SqlQuery\SqlEntity;
+use SwithFr\SqlQuery\Traits\HasID;
+use SwithFr\SqlQuery\Traits\HasDeletedAt;
 
 class ProductDemo extends SqlEntity
 {
-    public int $id;
+    use HasID, HasDeletedAt;
 
     public string $name;
 
