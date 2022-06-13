@@ -38,8 +38,8 @@ analyse: ## run phpstan analyse
 install: ## Installe les dépendances
 	composer install
 
-.PHONY: ci-test
-ci-test: ## Lance les tests pour la CI
+.PHONY: ci-tests
+ci-tests: ## Lance les tests pour la CI
 	make install
 	make start
 	make migrate
