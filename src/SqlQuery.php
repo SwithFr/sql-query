@@ -56,20 +56,20 @@ class SqlQuery
     }
 
     /**
-     * @param array<string, RelationshipInterface> $withs
+     * @param RelationshipInterface[] $withs
      */
     public function withs(array $withs): self
     {
-        foreach ($withs as $relationName => $relation) {
-            $this->with($relationName, $relation);
+        foreach ($withs as $relation) {
+            $this->with($relation);
         }
 
         return $this;
     }
 
-    public function with(string $relationName, RelationshipInterface $relation): self
+    public function with(RelationshipInterface $relation): self
     {
-        $this->_withs[$relationName] = [
+        $this->_withs[$relation->getName()] = [
             'query_aggregated_key' => $relation->getQueryAggregatedKey(), // La clé utilisée dans la query pour "agréger" les infos liées
             'related_class' => $relation->getRelatedClassName() ?? stdClass::class, // La classe à utiliser pour mapper les items liés
             'has_many' => $relation->hasMany(), // La relation est un array ou non ?

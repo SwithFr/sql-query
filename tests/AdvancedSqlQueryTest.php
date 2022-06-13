@@ -24,8 +24,8 @@ test('Test simple nested', function () use ($db) {
             where c.id in (1, 2)
             group by products.id
         ')
-        ->with('category', new ProductHaveOneCategory())
-        ->with('category.user', new CategoryBelongsToOneUser())
+        ->with(new ProductHaveOneCategory())
+        ->with(new CategoryBelongsToOneUser())
         ->one([], ProductDemo::class)
     ;
 
@@ -44,9 +44,9 @@ test('Test multi nested', function () use ($db) {
             group by products.id
         ')
         ->withs([
-            'category' => new ProductHaveOneCategory(),
-            'category.user' => new CategoryBelongsToOneUser(),
-            'category.user.products' => new UserHaveManyProducts(),
+            new ProductHaveOneCategory(),
+            new CategoryBelongsToOneUser(),
+            new UserHaveManyProducts('category.user.products'),
         ])
         ->all([], ProductDemo::class)
     ;

@@ -7,9 +7,13 @@ use SwithFr\Tests\DemoEntities\UserDemo;
 
 class CategoryBelongsToOneUser implements RelationshipInterface
 {
+    public function __construct(private string $name = 'category.user', private string $queryAggregatedKey = '_category_user')
+    {
+    }
+
     public function getQueryAggregatedKey(): string
     {
-        return "_category_user";
+        return $this->queryAggregatedKey;
     }
 
     public function getRelatedClassName(): ?string
@@ -20,5 +24,10 @@ class CategoryBelongsToOneUser implements RelationshipInterface
     public function hasMany(): bool
     {
         return false;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

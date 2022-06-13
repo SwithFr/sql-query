@@ -7,9 +7,13 @@ use SwithFr\Tests\DemoEntities\ProductDemo;
 
 class UserHaveManyProducts implements RelationshipInterface
 {
+    public function __construct(private string $name = 'user.products', private string $queryAggregatedKey = '_user_products')
+    {
+    }
+
     public function getQueryAggregatedKey(): string
     {
-        return "_user_products";
+        return $this->queryAggregatedKey;
     }
 
     public function getRelatedClassName(): ?string
@@ -20,5 +24,10 @@ class UserHaveManyProducts implements RelationshipInterface
     public function hasMany(): bool
     {
         return true;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

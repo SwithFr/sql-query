@@ -71,7 +71,7 @@ test('SqlQuery returns related item', function () use ($db) {
             left join categories c on products.category_id = c.id
             group by products.id
         ')
-        ->with('category', new ProductHaveOneCategory())
+        ->with(new ProductHaveOneCategory())
         ->one([], ProductDemo::class)
     ;
 
@@ -91,7 +91,7 @@ test('SqlQuery returns all related items', function () use ($db) {
             left join tags t on tag_id = t.id
             group by products.id
         ')
-        ->with('tags', new ProductHaveManyTags())
+        ->with(new ProductHaveManyTags())
         ->one([], ProductDemo::class)
     ;
 
@@ -117,8 +117,8 @@ test('SqlQuery returns related items for all items', function () use ($db) {
             group by products.id
         ')
         ->withs([
-            'category' => new ProductHaveOneCategory(),
-            'tags' => new ProductHaveManyTags(),
+            new ProductHaveOneCategory(),
+            new ProductHaveManyTags(),
         ])
         ->all([], ProductDemo::class)
     ;
@@ -153,7 +153,7 @@ test('Return empty array if no related', function () use ($db) {
             where products.id = 42
             group by products.id
         ')
-        ->with('tags', new ProductHaveManyTags())
+        ->with(new ProductHaveManyTags())
         ->one([], ProductDemo::class)
     ;
 
@@ -174,7 +174,7 @@ test('Related are stdclass if there is no related_class', function () use ($db) 
             left join categories c on products.category_id = c.id
             group by products.id
         ')
-        ->with('cat', new ProductHaveOneCategory(true))
+        ->with(new ProductHaveOneCategory('cat', '_cat'))
         ->one([], ProductDemo::class)
     ;
 
@@ -192,7 +192,7 @@ test('Related are stdclass if there is no related_class many relation', function
             where products.id = 42
             group by products.id
         ')
-        ->with('tagsstdclass', new ProductHaveManyTags(true))
+        ->with(new ProductHaveManyTags('tagsstdclass', '_tagsstdclass'))
         ->one([], ProductDemo::class)
     ;
 
