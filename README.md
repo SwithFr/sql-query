@@ -35,12 +35,12 @@ $result = $sql->query('
 L'astuce est d'agréger les infos liées au format json via `array_to_json(array_agg(table_liée.*)) as _nom_relation`;
 Pour ce faire il est important de faire un `group by item_principal.id` et un `select item_principal.*`.
 
-| Method                                                      | Explanations                                                                                                                              |
-|-------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| one(array $params, string $castInto = null)                 | Récupère un seul résultat. `$params` = tableau des variables a passer a la query. `$castInto` = nom de la classe pour mapper le résultat. |
-| all(array $params, string $castInto = null)                 | Récupère tous les résultats. Mêmes arguments que `one()`                                                                                  |
-| with(string $relationName, RelationshipInterface $relation) | Ajoute une relation à charger. Voir [Documentation relations](#documentation-relations)                                                   |
-| withs(array $withs)                                         | Ajoute plusieurs relations en une fois.                                                                                                   |
+| Method                                      | Explanations                                                                                                                              |
+|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| one(array $params, string $castInto = null) | Récupère un seul résultat. `$params` = tableau des variables a passer a la query. `$castInto` = nom de la classe pour mapper le résultat. |
+| all(array $params, string $castInto = null) | Récupère tous les résultats. Mêmes arguments que `one()`                                                                                  |
+| with(RelationshipInterface $relation)       | Ajoute une relation à charger. Voir [Documentation relations](#documentation-relations)                                                   |
+| withs(array $withs)                         | Ajoute plusieurs relations en une fois.                                                                                                   |
 
 ## Documentation relations
 
