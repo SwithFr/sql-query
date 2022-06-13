@@ -41,7 +41,6 @@ install: ## Installe les dépendances
 .PHONY: ci-tests
 ci-tests: ## Lance les tests pour la CI
 	make install
-	make start
 	make migrate
 	make seed
 	make tests
