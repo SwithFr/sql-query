@@ -14,20 +14,28 @@ class SqlQuery
 
     private array $_withs;
 
-    public function __construct(private DBInterface $db)
+    public function __construct(private readonly DBInterface $db)
     {
     }
 
     public function query(string $query): self
     {
+        $this->_withs = [];
         $this->_query = $query;
 
         return $this;
     }
 
+    /**
+     * @template T
+     * @param array $params
+     * @param class-string<T>|null $castInto
+     *
+     * @return stdClass[]|T[]
+     */
     public function all(array $params = [], string $castInto = null): array
     {
-        $statement = $this->_queryStringToStatement($this->_query);
+        $statement = $this->db->queryStringToStatement($this->_query);
         $statement->execute($params);
 
         $this->_setFetchIntoClass($statement, $castInto);
@@ -41,9 +49,16 @@ class SqlQuery
         return $this->_loadRelated($items);
     }
 
-    public function one(array $params = [], string $castInto = null): ?object
+    /**
+     * @template T
+     * @param array $params
+     * @param class-string<T>|null $castInto
+     *
+     * @return T|null
+     */
+    public function one(array $params = [], string $castInto = null)
     {
-        $statement = $this->_queryStringToStatement($this->_query);
+        $statement = $this->db->queryStringToStatement($this->_query);
         $statement->execute($params);
 
         $this->_setFetchIntoClass($statement, $castInto);
@@ -76,15 +91,6 @@ class SqlQuery
         ];
 
         return $this;
-    }
-
-    private function _queryStringToStatement(string $query): PDOStatement
-    {
-        try {
-            return $this->db->pdo()->prepare($query);
-        } catch (\PDOException $e) {
-            dd($e->getMessage());
-        }
     }
 
     private function _setFetchIntoClass(PDOStatement $statement, string $castInto = null): void

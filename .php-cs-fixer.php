@@ -9,6 +9,7 @@ return (new PhpCsFixer\Config())->setRules([
     'trailing_comma_in_multiline' => [
         'elements' => ['arrays'],
     ],
+    'method_chaining_indentation' => true,
     'not_operator_with_successor_space' => true,
     'class_attributes_separation' => [
         'elements' => [

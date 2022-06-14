@@ -3,10 +3,12 @@
 namespace SwithFr\Tests\DemoEntities;
 
 use SwithFr\SqlQuery\SqlEntity;
+use SwithFr\SqlQuery\Traits\HasID;
+use SwithFr\SqlQuery\Traits\HasUpdatedAt;
 
 class UserDemo extends SqlEntity
 {
-    public int $id;
+    use HasID, HasUpdatedAt;
 
     public string $name;
 
@@ -18,5 +20,15 @@ class UserDemo extends SqlEntity
     public function getProducts(): array
     {
         return $this->products;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
     }
 }
