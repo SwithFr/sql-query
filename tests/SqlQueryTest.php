@@ -7,9 +7,10 @@ use SwithFr\Tests\DemoEntities\ProductDemo;
 use SwithFr\Tests\DemoEntities\TagDemo;
 use SwithFr\Tests\DemoRelations\ProductHaveManyTags;
 use SwithFr\Tests\DemoRelations\ProductHaveOneCategory;
-use SwithFr\Tests\PgsqlDB;
+use function PHPUnit\Framework\assertTrue;
 use function PHPUnit\Framework\assertEmpty;
 use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertNotEmpty;
 use function PHPUnit\Framework\assertInstanceOf;
 use function PHPUnit\Framework\assertIsArray;
 use function PHPUnit\Framework\assertNotNull;
@@ -26,7 +27,8 @@ test('SqlQuery returns all results', function () use ($db) {
     $sql = new SqlQuery($db);
     $results = $sql->query('select products.* from products')->all();
 
-    assertEquals(10000, count($results));
+    assertNotEmpty($results);
+    assertTrue(count($results) > 100);
 });
 
 /**
@@ -125,7 +127,7 @@ test('SqlQuery returns related items for all items', function () use ($db) {
     ;
 
     assertIsArray($results);
-    assertEquals(10000, count($results));
+    assertTrue(count($results) > 100);
 
     foreach ($results as $result) {
         assertInstanceOf(ProductDemo::class, $result);

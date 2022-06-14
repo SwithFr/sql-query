@@ -8,7 +8,7 @@ class SqlEntity
 {
     use ArrayHydratation;
 
-    private array $_original = [];
+    private array $_original;
 
     public function __construct(array $data = [])
     {
@@ -21,5 +21,15 @@ class SqlEntity
     public function getOriginal(): array
     {
         return $this->_original;
+    }
+
+    public function toArray(): array
+    {
+        try {
+            $obj = json_encode(clone $this, JSON_THROW_ON_ERROR);
+            return (array) json_decode($obj, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            dd("Error when converting entity {get_class()} to array");
+        }
     }
 }

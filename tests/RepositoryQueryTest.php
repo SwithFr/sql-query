@@ -6,9 +6,11 @@ use SwithFr\Tests\DemoEntities\UserDemo;
 use SwithFr\Tests\DemoEntities\ProductDemo;
 use SwithFr\Tests\DemoRepositories\UsersRepository;
 use SwithFr\Tests\DemoRepositories\ProductsRepository;
+use SwithFr\SqlQuery\Exceptions\RecordNotFoundException;
 use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertNotNull;
+use function PHPUnit\Framework\assertNotEmpty;
 use function PHPUnit\Framework\assertNotEquals;
 use function PHPUnit\Framework\assertInstanceOf;
 
@@ -61,8 +63,45 @@ test('Test delete query just set deleted_at', function () use ($db) {
 
     $repo->delete($product);
 
+    /** @var ProductDemo $product */
     $product = $sql->query('select * from products where id = 1')->one([], ProductDemo::class);
 
     assertNotNull($product);
     assertInstanceOf(DateTime::class, $product->getDeletedAt());
+});
+
+test('Test get all', function () use ($db) {
+    $repo = new ProductsRepository($db);
+
+    $products = $repo->all();
+
+    assertNotEmpty($products);
+});
+
+test('Getting by ID', function () use ($db) {
+    $repo = new ProductsRepository($db);
+
+    $product = $repo->getById(1);
+
+    assertNotEmpty($product);
+    assertInstanceOf(ProductDemo::class, $product);
+});
+
+test('Getting by ID throw not found', function () use ($db) {
+    $repo = new ProductsRepository($db);
+
+    $product = $repo->getById(999999999);
+})->throws(RecordNotFoundException::class);
+
+test('Test insert query', function () use ($db) {
+    $repo = new ProductsRepository($db);
+    $product = new ProductDemo([
+        'name' => 'Mon super produit',
+    ]);
+
+    assertNull($product->getId());
+
+    $product = $repo->insert($product);
+
+    assertNotNull($product->getId());
 });

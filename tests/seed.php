@@ -17,7 +17,7 @@ it('migrate', function() use ($db) {
     $db->getPdo()->query('
         create table products
         (
-            id          serial
+            id serial
                 constraint products_pk
                     primary key,
             name        varchar not null,
