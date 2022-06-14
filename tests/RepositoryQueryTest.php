@@ -1,5 +1,6 @@
 <?php
 
+use Faker\Factory;
 use SwithFr\SqlQuery\SqlQuery;
 use SwithFr\SqlQuery\PgsqlDatabase;
 use SwithFr\Tests\DemoEntities\UserDemo;
@@ -8,8 +9,10 @@ use SwithFr\Tests\DemoRepositories\UsersRepository;
 use SwithFr\Tests\DemoRepositories\ProductsRepository;
 use SwithFr\SqlQuery\Exceptions\RecordNotFoundException;
 use function PHPUnit\Framework\assertNull;
+use function PHPUnit\Framework\assertEmpty;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertNotNull;
+use function PHPUnit\Framework\assertIsArray;
 use function PHPUnit\Framework\assertNotEmpty;
 use function PHPUnit\Framework\assertNotEquals;
 use function PHPUnit\Framework\assertInstanceOf;
@@ -104,4 +107,62 @@ test('Test insert query', function () use ($db) {
     $product = $repo->insert($product);
 
     assertNotNull($product->getId());
+});
+
+test('Test insert query multiple', function () use ($db) {
+    $repo = new ProductsRepository($db);
+    $faker = Factory::create();
+    $products = [];
+    for ($i = 0; $i < 10; $i++) {
+         $products[] = new ProductDemo([
+             'name' => $faker->name,
+         ]);
+    }
+
+    $products = $repo->insertAll($products);
+
+    assertIsArray($products);
+    foreach ($products as $product) {
+        assertNotNull($product->getId());
+    }
+});
+
+test('Test delete multiple', function () use ($db) {
+    $repo = new ProductsRepository($db);
+    $faker = Factory::create();
+    $products = [];
+    for ($i = 0; $i < 10; $i++) {
+         $products[] = new ProductDemo([
+             'name' => $faker->name,
+         ]);
+    }
+
+    $products = $repo->insertAll($products);
+    $ids = implode(',', array_map(fn ($p) => $p->getId(), $products));
+    $repo->deleteAll($products);
+
+    $products = $repo->query("select products.* from products where id in ($ids)")->all();
+
+    assertEmpty($products);
+});
+
+test('Test delete multiple with entities and ids', function () use ($db) {
+    $repo = new ProductsRepository($db);
+    $faker = Factory::create();
+    $products = [];
+    for ($i = 0; $i < 10; $i++) {
+         $products[] = new ProductDemo([
+             'name' => $faker->name,
+         ]);
+    }
+
+    $products = $repo->insertAll($products);
+    $ids = array_map(static fn ($p) => $p->getId(), $products);
+    $products[0] = $ids[0]; // on remplace une entité par un id
+    $ids = implode(',', $ids);
+    $repo->deleteAll($products);
+
+    $products = $repo->query("select products.* from products where id in ($ids)")->all();
+
+    assertEmpty($products);
 });

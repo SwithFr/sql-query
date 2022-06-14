@@ -6,6 +6,10 @@ help: ## Affiche cette aide
 tests: ## Lance les tests
 	./vendor/bin/pest --group=tests
 
+.PHONY: coverage
+coverage: ## Lance les tests
+	XDEBUG_MODE=coverage ./vendor/bin/pest --group=tests --coverage
+
 .PHONY: test-advanced
 test-advanced: ## Lance les tests du group advanced
 	./vendor/bin/pest --group=advanced

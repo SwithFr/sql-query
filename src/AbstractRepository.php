@@ -57,23 +57,39 @@ abstract class AbstractRepository
     public function insert(SqlEntity $entity)
     {
         $hasId = method_exists($entity, 'setId');
-        $arrayEntity = $entity->toArray();
-        if ($hasId) {
-            unset($arrayEntity['id']);
-        }
-        $fields = array_keys($arrayEntity);
-        $columns = implode(',', $fields);
-        $values = implode(',', array_map(static fn ($f) => ":$f", $fields));
+        ['fields' => $fields, 'columns' => $columns, 'arrayEntity' => $arrayEntity, 'values' => $values] = $this->_getInsertColumns($entity, $hasId);
         $query = "insert into {$this->table} ($columns) values ($values)";
 
         $record = $this->db->getPdo()->prepare($query)->execute($arrayEntity);
 
         if ($hasId) {
-            /** @phpstan-ignore-next-line */
             $entity->setId($this->db->getPdo()->lastInsertId());
         }
 
         return $entity;
+    }
+
+    public function insertAll(array $entities): array
+    {
+        $first = $entities[0];
+        $hasId = method_exists($first, 'setId');
+        $return = $hasId ? "returning id" : '';
+        ['fields' => $fields, 'columns' => $columns, 'arrayEntity' => $arrayEntity, 'values' => $values] = $this->_getInsertColumns($first, $hasId);
+        $allValues = implode(',', array_fill(0, count($entities), "($values)"));
+
+        $query = "insert into {$this->table} ($columns) values $allValues $return";
+
+        $statement =  $this->db->getPdo()->prepare($query);
+        $statement->execute($arrayEntity);
+
+        if ($hasId) {
+            $ids = $statement->fetchAll();
+            foreach ($entities as $entity) {
+                $entity->setId($this->db->getPdo()->lastInsertId());
+            }
+        }
+
+        return $entities;
     }
 
     public function update(SqlEntity $entity): bool
@@ -103,6 +119,11 @@ abstract class AbstractRepository
         return $this->sqlQuery->query("select {$this->table}.* from {$this->table}")->all([], $this->entityClass);
     }
 
+    public function query(string $query): SqlQuery
+    {
+        return $this->sqlQuery->query($query);
+    }
+
     public function delete(SqlEntity $entity): bool
     {
         if (method_exists($entity, 'setDeletedAt')) {
@@ -116,14 +137,61 @@ abstract class AbstractRepository
         return $this->db->queryStringToStatement($query)->execute($this->_getPkParam($entity));
     }
 
+    public function deleteAll(array $entities): void
+    {
+        $ids = [];
+
+        foreach ($entities as $entity) {
+            if ($entity instanceof SqlEntity && method_exists($entity, 'getId')) {
+                $ids[] = $entity->getId();
+            } else if (is_int($entity)) {
+                $ids[] = $entity;
+            }
+        }
+
+        $query = "delete from {$this->table} {$this->_buildPKWhereInClause(count($entities))}";
+
+        $this->db->queryStringToStatement($query)->execute($ids);
+    }
+
     private function _buildPKWhereClause(): string
     {
         return " where {$this->pkKey} = :{$this->pkKey}";
+    }
+
+    private function _buildPKWhereInClause(int $count): string
+    {
+        $placeholders = implode(',', array_fill(0, $count, '?'));
+        return " where {$this->pkKey} in ($placeholders)";
     }
 
     private function _getPkParam(SqlEntity|int $entity): array
     {
         $id = $entity instanceof SqlEntity ? $entity->{$this->pkKey} : $entity;
         return [$this->pkKey => $id];
+    }
+
+    /**
+     * @param T $entity
+     * @param bool $hasId
+     *
+     * @return array
+     */
+    private function _getInsertColumns(SqlEntity $entity, bool $hasId): array
+    {
+        $arrayEntity = $entity->toArray();
+
+        if ($hasId) {
+            unset($arrayEntity['id']);
+        }
+
+        $fields = array_keys($arrayEntity);
+
+        return [
+            'fields' => $fields,
+            'columns' => implode(',', $fields),
+            'values' => implode(',', array_map(static fn ($f) => ":$f", $fields)),
+            'arrayEntity' => $arrayEntity,
+        ];
     }
 }
