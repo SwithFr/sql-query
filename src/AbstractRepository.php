@@ -25,7 +25,7 @@ abstract class AbstractRepository
 
     private SqlQuery $sqlQuery;
 
-    public function __construct(private DBInterface $db)
+    public function __construct(private readonly DBInterface $db)
     {
         $this->sqlQuery = new SqlQuery($db);
     }

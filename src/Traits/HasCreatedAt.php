@@ -11,7 +11,7 @@ trait HasCreatedAt
 
     public function getCreatedAt(): DateTimeInterface
     {
-        return new DateTime($this->deleted_at);
+        return new DateTime($this->created_at);
     }
 
     public function setCreatedAt(DateTimeInterface $createdAt): self

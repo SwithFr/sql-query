@@ -4,7 +4,7 @@ help: ## Affiche cette aide
 
 .PHONY: tests
 tests: ## Lance les tests
-	./vendor/bin/pest --group=tests
+	docker compose exec php ./vendor/bin/pest --group=tests
 
 .PHONY: coverage
 coverage: ## Lance les tests
@@ -12,35 +12,35 @@ coverage: ## Lance les tests
 
 .PHONY: test-advanced
 test-advanced: ## Lance les tests du group advanced
-	./vendor/bin/pest --group=advanced
+	docker compose exec php ./vendor/bin/pest --group=advanced
 
 .PHONY: seed
 seed: ## Seed la db
-	./vendor/bin/pest --group=seed
+	docker compose exec php ./vendor/bin/pest --group=seed
 
 .PHONY: migrate
 migrate: ## Lance les migrations
-	./vendor/bin/pest --group=migrate
+	docker compose exec php ./vendor/bin/pest --group=migrate
 
 .PHONY: start
 start: ## Lance le serveur de développement sans watch les assets
-	docker-compose up -d
+	docker compose up -d
 
 .PHONY: stop
 stop:
-	docker-compose down
+	docker compose down
 
 .PHONY: cs
 cs: ## run php cs fixer
-	./vendor/bin/php-cs-fixer fix
+	docker compose exec php ./vendor/bin/php-cs-fixer fix
 
 .PHONY: analyse
 analyse: ## run phpstan analyse
-	./vendor/bin/phpstan analyse
+	docker compose exec php ./vendor/bin/phpstan analyse
 
 .PHONY: install
 install: ## Installe les dépendances
-	composer install
+	docker compose exec php composer install
 
 .PHONY: ci-tests
 ci-tests: ## Lance les tests pour la CI
