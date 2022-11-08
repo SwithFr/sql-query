@@ -3,10 +3,13 @@
 namespace SwithFr\Tests\DemoEntities;
 
 use SwithFr\SqlQuery\SqlEntity;
+use SwithFr\SqlQuery\Traits\HasID;
+use SwithFr\SqlQuery\Traits\HasDeletedAt;
+use SwithFr\Tests\DemoRelations\ProductHaveOneCategory;
 
 class ProductDemo extends SqlEntity
 {
-    public int $id;
+    use HasID, HasDeletedAt;
 
     public string $name;
 
@@ -42,5 +45,10 @@ class ProductDemo extends SqlEntity
     public function getTagsStdClass(): array
     {
         return $this->tagsstdclass;
+    }
+
+    public static function relatedCategory(): ProductHaveOneCategory
+    {
+        return new ProductHaveOneCategory();
     }
 }

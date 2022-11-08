@@ -31,4 +31,8 @@ interface RelationshipInterface
      * @return bool
      */
     public function hasMany(): bool;
+
+    public function getJoinQuery(): string;
+
+    public function getRelatedTable(): string;
 }

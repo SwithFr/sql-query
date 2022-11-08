@@ -23,4 +23,14 @@ class UserHaveManyProducts extends Relationship
     {
         return true;
     }
+
+    public function getJoinQuery(): string
+    {
+        return 'left join products on products.user_id = users.id';
+    }
+
+    public function getRelatedTable(): string
+    {
+        return 'users';
+    }
 }

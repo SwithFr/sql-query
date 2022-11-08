@@ -1,23 +1,23 @@
 <?php
 
 use SwithFr\SqlQuery\SqlQuery;
+use SwithFr\SqlQuery\PgsqlDatabase;
 use SwithFr\Tests\DemoEntities\ProductDemo;
 use SwithFr\Tests\DemoEntities\UserDemo;
 use SwithFr\Tests\DemoRelations\CategoryBelongsToOneUser;
 use SwithFr\Tests\DemoRelations\ProductHaveOneCategory;
 use SwithFr\Tests\DemoRelations\UserHaveManyProducts;
-use SwithFr\Tests\PgsqlDB;
 use function PHPUnit\Framework\assertInstanceOf;
 use function PHPUnit\Framework\assertIsArray;
 
-$db = new PgsqlDB();
+$db = new PgsqlDatabase();
 
 uses()->group('tests', 'advanced');
 
 test('Test simple nested', function () use ($db) {
     $sql = new SqlQuery($db);
     $result = $sql->query('
-            select products.*,  array_to_json(array_agg(c.*)) as _category, array_to_json(array_agg(c.*)) as _category_user
+            select products.*,  array_to_json(array_agg(c.*)) as _category, array_to_json(array_agg(u.*)) as _category_user
             from products
             left join categories c on products.category_id = c.id
             left join users u on c.user_id = u.id
@@ -35,7 +35,7 @@ test('Test simple nested', function () use ($db) {
 test('Test multi nested', function () use ($db) {
     $sql = new SqlQuery($db);
     $results = $sql->query('
-            select products.*,  array_to_json(array_agg(c.*)) as _category, array_to_json(array_agg(c.*)) as _category_user, array_to_json(array_agg(pu.*)) as _user_products
+            select products.*,  array_to_json(array_agg(c.*)) as _category, array_to_json(array_agg(u.*)) as _category_user, array_to_json(array_agg(pu.*)) as _user_products
             from products
             left join categories c on products.category_id = c.id
             left join users u on c.user_id = u.id
