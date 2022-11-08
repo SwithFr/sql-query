@@ -5,6 +5,7 @@ use SwithFr\SqlQuery\SqlQuery;
 use SwithFr\SqlQuery\PgsqlDatabase;
 use SwithFr\Tests\DemoEntities\UserDemo;
 use SwithFr\Tests\DemoEntities\ProductDemo;
+use SwithFr\Tests\DemoEntities\CategoryDemo;
 use SwithFr\Tests\DemoRepositories\UsersRepository;
 use SwithFr\Tests\DemoRepositories\ProductsRepository;
 use SwithFr\SqlQuery\Exceptions\RecordNotFoundException;
@@ -114,9 +115,9 @@ test('Test insert query multiple', function () use ($db) {
     $faker = Factory::create();
     $products = [];
     for ($i = 0; $i < 10; $i++) {
-         $products[] = new ProductDemo([
-             'name' => $faker->name,
-         ]);
+        $products[] = new ProductDemo([
+            'name' => $faker->name,
+        ]);
     }
 
     $products = $repo->insertAll($products);
@@ -132,13 +133,13 @@ test('Test delete multiple', function () use ($db) {
     $faker = Factory::create();
     $products = [];
     for ($i = 0; $i < 10; $i++) {
-         $products[] = new ProductDemo([
-             'name' => $faker->name,
-         ]);
+        $products[] = new ProductDemo([
+            'name' => $faker->name,
+        ]);
     }
 
     $products = $repo->insertAll($products);
-    $ids = implode(',', array_map(fn ($p) => $p->getId(), $products));
+    $ids = implode(',', array_map(fn($p) => $p->getId(), $products));
     $repo->deleteAll($products);
 
     $products = $repo->query("select products.* from products where id in ($ids)")->all();
@@ -151,13 +152,13 @@ test('Test delete multiple with entities and ids', function () use ($db) {
     $faker = Factory::create();
     $products = [];
     for ($i = 0; $i < 10; $i++) {
-         $products[] = new ProductDemo([
-             'name' => $faker->name,
-         ]);
+        $products[] = new ProductDemo([
+            'name' => $faker->name,
+        ]);
     }
 
     $products = $repo->insertAll($products);
-    $ids = array_map(static fn ($p) => $p->getId(), $products);
+    $ids = array_map(static fn($p) => $p->getId(), $products);
     $products[0] = $ids[0]; // on remplace une entité par un id
     $ids = implode(',', $ids);
     $repo->deleteAll($products);
@@ -165,4 +166,16 @@ test('Test delete multiple with entities and ids', function () use ($db) {
     $products = $repo->query("select products.* from products where id in ($ids)")->all();
 
     assertEmpty($products);
+});
+
+test('Test get all with related', function () use ($db) {
+    $repo = new ProductsRepository($db);
+
+    $products = $repo->allWithCategory();
+
+    assertNotEmpty($products);
+
+    foreach ($products as $product) {
+        assertInstanceOf(CategoryDemo::class, $product->getCategory());
+    }
 });

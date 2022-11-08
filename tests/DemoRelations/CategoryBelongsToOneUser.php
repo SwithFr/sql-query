@@ -18,4 +18,14 @@ class CategoryBelongsToOneUser extends Relationship
     {
         return UserDemo::class;
     }
+
+    public function getRelatedTable(): string
+    {
+        return 'users';
+    }
+
+    public function getJoinQuery(): string
+    {
+        return 'left join users on users.id = categories.id';
+    }
 }

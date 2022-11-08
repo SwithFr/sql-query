@@ -17,4 +17,14 @@ class ProductHaveOneCategory extends Relationship
     {
         return $this->name === 'category' ? CategoryDemo::class : stdClass::class;
     }
+
+    public function getJoinQuery(): string
+    {
+        return 'left join categories on products.category_id = categories.id';
+    }
+
+    public function getRelatedTable(): string
+    {
+        return 'categories';
+    }
 }

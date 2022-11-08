@@ -23,7 +23,12 @@ abstract class AbstractRepository
 
     public string $pkKey = 'id';
 
-    private SqlQuery $sqlQuery;
+    protected SqlQuery $sqlQuery;
+
+    /**
+     * @var \SwithFr\SqlQuery\Contracts\RelationshipInterface[]
+     */
+    private array $_withs = [];
 
     public function __construct(private readonly DBInterface $db)
     {
@@ -50,6 +55,13 @@ abstract class AbstractRepository
         return $record;
     }
 
+    public function withs(array $relations): static
+    {
+        $this->_withs = $relations;
+
+        return $this;
+    }
+
     /**
      * @param T $entity
      * @return T
@@ -69,6 +81,10 @@ abstract class AbstractRepository
         return $entity;
     }
 
+    /**
+     * @param T[] $entities
+     * @return T[]
+     */
     public function insertAll(array $entities): array
     {
         $first = $entities[0];

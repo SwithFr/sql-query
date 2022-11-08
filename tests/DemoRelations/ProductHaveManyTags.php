@@ -22,4 +22,14 @@ class ProductHaveManyTags extends Relationship
     {
         return true;
     }
+
+    public function getJoinQuery(): string
+    {
+        return 'left join product_tag on product_id = products.id left join tags tags on tag_id = t.id';
+    }
+
+    public function getRelatedTable(): string
+    {
+        return 'tags';
+    }
 }
